@@ -9,6 +9,7 @@ s.bind(('', 50001))
 
 while True:
     mensaje, dir_cli = s.recvfrom(1024)
+    
 
     s.sendto(mensaje, dir_cli)
 s.close()
