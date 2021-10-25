@@ -90,6 +90,7 @@ while True:
         print("ha usado el comando GET")
     if comando == "SET":
         print("ha usado el comando SET")
+<<<<<<< HEAD
         cpCalefacciones=calefacciones
         if parametros == ['']:
             sol="-3"
@@ -107,6 +108,11 @@ while True:
         else:
             calefacciones=cpCalefacciones
             sol="-16"
+=======
+        if parametros[0]:
+
+
+>>>>>>> f6ec9196939152a7a2ad27254d204c0edc8f327a
 
     s.sendto(sol.encode(), dir_cli)
 s.close()
