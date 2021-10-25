@@ -48,14 +48,21 @@ while True:
     if(comando=="ONN"):
         print("ha usado el comando ONN")
         print(parametros)
+        i=0
         if(parametros==['']):
-            for calefaccion in calefacciones:
-                calefaccion.status=True
+            while i<len(calefacciones) and connect==True:
+                calefacciones[i].status=True 
+                connect= calefacciones[i].connect
+                i=i+1
         else:
-            for calefaccion in calefacciones:
+            while i<len(calefacciones) and connect==True:
                 for parametro in parametros:
-                    if(parametro==calefaccion.id):
-                        calefaccion.status=True
+                    if(parametro[0:].isdigit()):
+                        if(parametro==calefacciones[i].id):
+                            calefacciones[i].status=True
+                            calefacciones[i].connect
+                    else:
+                        sol="-4"
         for calefaccion in calefacciones: 
             print(calefaccion.status)
     
