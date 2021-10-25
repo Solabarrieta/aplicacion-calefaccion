@@ -7,5 +7,6 @@ class Calefaccion:
     def toString(self):
         s = "{},{}".format(self.id,self.nombre)
         return s
+    # Metodo para simular que no se puede acceder al objeto.
     def connect(self):
         return True;
