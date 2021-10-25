@@ -7,3 +7,5 @@ class Calefaccion:
     def toString(self):
         s = "{},{}".format(self.id,self.nombre)
         return s
+    def connect(self):
+        return True;

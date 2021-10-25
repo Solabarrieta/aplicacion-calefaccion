@@ -18,12 +18,21 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 s.bind(('', 50001))
 
+comands= ["ONN","OFF","NAM","NOW","GET","SET"];
+
+
+connect=True;
 while True:
     mensaje, dir_cli = s.recvfrom(1024)
     mensaje= mensaje.decode()
     comando=mensaje[0:3]
 
     parametros=mensaje[3:len(mensaje)].split(':')
+
+    if comando not in comands:
+        sol="-1"
+    
+    
     if(comando=="ONN"):
         print("ha usado el comando ONN")
         print(parametros)
@@ -37,6 +46,8 @@ while True:
                         calefaccion.status=True
         for calefaccion in calefacciones: 
             print(calefaccion.status)
+    
+    
     if(comando=="OFF"):
         print("ha usado el comando OFF")
         if(parametros==['']):
@@ -49,13 +60,23 @@ while True:
                         calefaccion.status=False
         for calefaccion in calefacciones: 
             print(calefaccion.status)
+    
     if(comando=="NAM"):
         print("ha usado el comando NAM")
         if(parametros==['']):
             sol="{}".format(calefacciones[0].toString())
-            for i in range(1,len(calefacciones)):
+            err=calefacciones[0].connect
+            i=1
+            while i < len(calefacciones) and connect==True:
                 sol="{}:{}".format(sol,calefacciones[i].toString())
                 print(sol)
+                connect=calefacciones[i].connect()
+                i=i+1
+            if(connect==True):
+                sol="+{}".format(sol)
+            else:
+                sol="-13"
+                
     if(comando=="NOW"):
         print("ha usado el comando NOW")
         if(parametros==['']):
@@ -66,7 +87,7 @@ while True:
                 for parametro in parametros:
                     if(parametro==calefaccion.id):
                         print('id:',calefaccion.id,'temperatura:',calefaccion.temperatura)
-
+                        
     if(comando=="GET"):
         print("ha usado el comando GET")
     if(comando=="SET"):
