@@ -49,13 +49,8 @@ while True:
 
     # Ejecucion de los comandos:
     if comando == "ONN":
-<<<<<<< HEAD
         print("ha usado el comando ONN")
         sol=OnOf(parametros, calefacciones, True, '-11')
-=======
-        print("ha usado el comando OFF")
-        sol = OnOf(parametros, calefacciones, True, '-11')
->>>>>>> 71b8d0c06e24b6b7c18ba8cdc4861245011a8a07
 
     if comando == "OFF":
         print("ha usado el comando OFF")
