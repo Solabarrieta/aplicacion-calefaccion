@@ -8,10 +8,10 @@ from funciones import OnOf
 PORT = 50001
 
 # Creacion de las diferentes calefacciones
-calefaccion1 = Calefaccion('1', 'sala', False, 25)
-calefaccion2 = Calefaccion('2', 'cocina', False, 18)
-calefaccion3 = Calefaccion('3', 'habitacion', False, 30)
-calefaccion4 = Calefaccion('4', 'baño', False, 27)
+calefaccion1 = Calefaccion('1', 'sala', False, 25.4)
+calefaccion2 = Calefaccion('2', 'cocina', False, 18.3)
+calefaccion3 = Calefaccion('3', 'habitacion', False, 25.2)
+calefaccion4 = Calefaccion('4', 'baño', False, 10.4)
 # Lista de las calefacciones
 calefacciones = [calefaccion1, calefaccion2, calefaccion3, calefaccion4]
 
@@ -75,65 +75,80 @@ while True:
     if comando == "NOW":
         print("ha usado el comando NOW")
         if parametros == ['']:
-            for calefaccion in calefacciones:
-                print('id:', calefaccion.id, 'temperatura:',
-                      calefaccion.temperatura)
+            sol = ":".join([str(x.temperatura).replace('.', '')
+                           for x in calefacciones])
+        elif len(parametros) > 1:
+            sol = "-2"
         else:
+            t = []
             for calefaccion in calefacciones:
                 for parametro in parametros:
-                    if parametro == calefaccion.id:
-                        print('id:', calefaccion.id, 'temperatura:',
-                              calefaccion.temperatura)
+                    if(parametro == calefaccion.id):
+                        print(parametro)
+                        t.append(calefaccion.temperatura)
+
+            sol = ":".join([str(x).replace('.', '') for x in t])
 
     if comando == "GET":
         print("ha usado el comando GET")
     if comando == "SET":
         print("ha usado el comando SET")
+        cpCalefacciones = calefacciones
+        if parametros == ['']:
+            sol = "-3"
+        elif len(parametros[0]) != 3:
+            sol = "-4"
+        elif len(parametros) == 1:
+            for calefaccion in calefacciones:
+                calefaccion.temperatura = parametros[0]
+        elif len(parametros) == 2:
+            for calefaccion in calefacciones:
+                if calefaccion.id == parametros[1]:
+                    calefaccion.temperatura = parametros[0]
+        elif len(parametros) > 2:
+            sol = "-2"
+        else:
+            calefacciones = cpCalefacciones
+            sol = "-16"
 
     s.sendto(sol.encode(), dir_cli)
 s.close()
 
 
-def errorHandling(command):
+def errorHandling():
     if not command in commnads:
         sol = "-1"
-        return sol
 
     else:
         if command == "SET":
             if len(parametros) == 2:
                 if parametro[0] == "":
                     sol = -3
-                    return sol
                 else:
                     if not len(parametros[0]) == 3 and not checkId(parametros[0]):
                         sol = "-4"
-                        return sol
 
                     else:
                         try:
                             temperatura = int(parametros[1])
                         except:
                             sol = "-4"
-                            return sol
 
         if command == "GET":
             if len(parametros) > 0:
                 if not checkId(parametros[0]):
                     sol = "-4"
-                    return sol
 
         if command == "NAM":
             if len(parametros):
                 sol = "-2"
-                return sol
 
         if command == "OFF" or command == "ONN" or command == "NOW":
             for parametro in parametros:
                 if not checkId(parametro):
                     sol = "-4"
-                    return sol
                     break
+    return sol
 
 
 def checkId(id):
