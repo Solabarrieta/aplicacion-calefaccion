@@ -83,6 +83,9 @@ while True:
         print("ha usado el comando GET")
     if comando == "SET":
         print("ha usado el comando SET")
+        if parametros[0]:
+
+
 
     s.sendto(sol.encode(), dir_cli)
 s.close()
