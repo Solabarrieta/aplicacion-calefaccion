@@ -80,6 +80,7 @@ while True:
         if parametros == ['']:
             sol = ":".join([str(x.temperatura).replace('.', '')
                             for x in radiadores])
+            sol="+{}".format(sol)
         elif len(parametros) > 1:
             sol = "-2"
         else:
@@ -91,6 +92,7 @@ while True:
                         t.append(radiador.temperatura)
             if(checkId(parametros[0],ids)):
                 sol = ":".join([str(x).replace('.', '') for x in t])
+                sol="+{}".format(sol)
             else:
                 sol="-14"
 
@@ -104,12 +106,20 @@ while True:
         elif len(parametros[0]) != 3:
             sol = "-4"
         elif len(parametros) == 1:
-            for radiador in radiadores:
-                radiador.temperatura = parametros[0]
+            if int(parametros[0]) >= 0:
+                for radiador in radiadores:
+                    radiador.temperatura = parametros[0]
+                sol="+"
+            else:
+                sol="-4"
         elif len(parametros) == 2:
             for radiador in radiadores:
-                if radiador.id == parametros[1]:
-                    radiador.temperatura = parametros[0]
+                if int(parametros[0]) >= 0:
+                    if radiador.id == parametros[1]:
+                        radiador.temperatura = parametros[0]
+                        sol="+"
+                else:
+                    sol="-4"
         elif len(parametros) > 2:
             sol = "-2"
         else:
