@@ -1,6 +1,5 @@
 def OnOf(parametros, calefacciones, OnOf, err):
     connect = True
-    print(parametros)
     i = 0
     s = ''
     if parametros == ['']:
@@ -17,8 +16,8 @@ def OnOf(parametros, calefacciones, OnOf, err):
             i = i + 1
     if not connect:
         s = err
-    for calefaccion in calefacciones:
-        print(calefaccion.status)
+    else:
+        s="+"
     return s
 
 

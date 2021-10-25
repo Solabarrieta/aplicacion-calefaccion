@@ -45,7 +45,7 @@ while True:
 
     # Ejecucion de los comandos:
     if comando == "ONN":
-        print("ha usado el comando OFF")
+        print("ha usado el comando ONN")
         sol=OnOf(parametros, calefacciones, True, '-11')
 
     if comando == "OFF":
@@ -67,6 +67,8 @@ while True:
                 sol = "+{}".format(sol)
             else:
                 sol = "-13"
+        else: 
+            sol="-2"
 
     if comando == "NOW":
         print("ha usado el comando NOW")
