@@ -20,16 +20,20 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind(('', 50001))
 
 # Lista de comandos
-commands = ["ONN", "OFF", "NAM", "NOW", "GET", "SET"];
+commands = ["ONN", "OFF", "NAM", "NOW", "GET", "SET"]
+ids = []
+for calefaccion in calefacciones:
+    ids.append(calefaccion.id)
+
 
 while True:
     mensaje, dir_cli = s.recvfrom(1024)
 
     # Guarda el valor de el metodo connect() de la clase calefaccion
-    connect = True;
+    connect = True
 
     # La cadena que se enviara al cliente
-    sol = "";
+    sol = ""
 
     mensaje = mensaje.decode()
 
@@ -46,11 +50,11 @@ while True:
     # Ejecucion de los comandos:
     if comando == "ONN":
         print("ha usado el comando OFF")
-        sol=OnOf(parametros, calefacciones, True, '-11')
+        sol = OnOf(parametros, calefacciones, True, '-11')
 
     if comando == "OFF":
         print("ha usado el comando OFF")
-        sol=OnOf(parametros, calefacciones, False, '-12')
+        sol = OnOf(parametros, calefacciones, False, '-12')
 
     if comando == "NAM":
         print("ha usado el comando NAM")
@@ -72,12 +76,14 @@ while True:
         print("ha usado el comando NOW")
         if parametros == ['']:
             for calefaccion in calefacciones:
-                print('id:', calefaccion.id, 'temperatura:', calefaccion.temperatura)
+                print('id:', calefaccion.id, 'temperatura:',
+                      calefaccion.temperatura)
         else:
             for calefaccion in calefacciones:
                 for parametro in parametros:
                     if parametro == calefaccion.id:
-                        print('id:', calefaccion.id, 'temperatura:', calefaccion.temperatura)
+                        print('id:', calefaccion.id, 'temperatura:',
+                              calefaccion.temperatura)
 
     if comando == "GET":
         print("ha usado el comando GET")
@@ -86,3 +92,52 @@ while True:
 
     s.sendto(sol.encode(), dir_cli)
 s.close()
+
+
+def errorHandling(command):
+    if not command in commnads:
+        sol = "-1"
+        return sol
+
+    else:
+        if command == "SET":
+            if len(parametros) == 2:
+                if parametro[0] == "":
+                    sol = -3
+                    return sol
+                else:
+                    if not len(parametros[0]) == 3 and not checkId(parametros[0]):
+                        sol = "-4"
+                        return sol
+
+                    else:
+                        try:
+                            temperatura = int(parametros[1])
+                        except:
+                            sol = "-4"
+                            return sol
+
+        if command == "GET":
+            if len(parametros) > 0:
+                if not checkId(parametros[0]):
+                    sol = "-4"
+                    return sol
+
+        if command == "NAM":
+            if len(parametros):
+                sol = "-2"
+                return sol
+
+        if command == "OFF" or command == "ONN" or command == "NOW":
+            for parametro in parametros:
+                if not checkId(parametro):
+                    sol = "-4"
+                    return sol
+                    break
+
+
+def checkId(id):
+    if id in ids:
+        return True
+    else:
+        return False
