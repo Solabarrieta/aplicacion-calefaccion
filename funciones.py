@@ -1,4 +1,7 @@
 def OnOf(parametros, calefacciones, OnOf, err):
+    ids = []
+    for calefaccion in calefacciones:
+        ids.append(calefaccion.id)
     connect = True
     i = 0
     s = ''
@@ -7,14 +10,14 @@ def OnOf(parametros, calefacciones, OnOf, err):
     else:
         while i < len(calefacciones) and connect == True:
             for parametro in parametros:
-                if parametro[0:].isdigit():
+                if parametro[0:].isdigit() and checkId(parametro,ids):
                     if parametro == calefacciones[i].id:
                         calefacciones[i].status = OnOf
                         connect=calefacciones[i].connect()
                 else:
                     s = "-4"
             i = i + 1
-    if not connect:
+    if not connect or s=="-4":
         s = err
     else:
         s="+"
@@ -27,3 +30,9 @@ def onOfAllElements(OnOf, calefacciones, connect, i):
         calefacciones[i].status = OnOf
         i = i + 1
     return connect
+
+def checkId(id,calIds):
+    if id in calIds:
+        return True
+    else:
+        return False

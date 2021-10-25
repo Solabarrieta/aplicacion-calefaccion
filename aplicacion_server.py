@@ -2,18 +2,18 @@
 
 import socket
 
-from Calefaccion import Calefaccion
-from funciones import OnOf
+from Radiador import Radiador
+from funciones import OnOf,checkId
 
 PORT = 50001
 
 # Creacion de las diferentes calefacciones
-calefaccion1 = Calefaccion('1', 'sala', False, 25.4)
-calefaccion2 = Calefaccion('2', 'cocina', False, 18.3)
-calefaccion3 = Calefaccion('3', 'habitacion', False, 25.2)
-calefaccion4 = Calefaccion('4', 'baño', False, 10.4)
+radiador1 = Radiador('1', 'sala', False, 25.4)
+radiador2 = Radiador('2', 'cocina', False, 18.3)
+radiador3 = Radiador('3', 'habitacion', False, 25.2)
+radiador4 = Radiador('4', 'bano', False, 10.4)
 # Lista de las calefacciones
-calefacciones = [calefaccion1, calefaccion2, calefaccion3, calefaccion4]
+radiadores = [radiador1, radiador2, radiador3, radiador4]
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -22,8 +22,8 @@ s.bind(('', 50001))
 # Lista de comandos
 commands = ["ONN", "OFF", "NAM", "NOW", "GET", "SET"]
 ids = []
-for calefaccion in calefacciones:
-    ids.append(calefaccion.id)
+for radiador in radiadores:
+    ids.append(radiador.id)
 
 
 while True:
@@ -49,23 +49,24 @@ while True:
 
     # Ejecucion de los comandos:
     if comando == "ONN":
+        #errorHandling()
         print("ha usado el comando ONN")
-        sol=OnOf(parametros, calefacciones, True, '-11')
+        sol=OnOf(parametros, radiadores, True, '-11')
 
     if comando == "OFF":
         print("ha usado el comando OFF")
-        sol = OnOf(parametros, calefacciones, False, '-12')
+        sol = OnOf(parametros, radiadores, False, '-12')
 
     if comando == "NAM":
         print("ha usado el comando NAM")
         if parametros == ['']:
-            sol = "{}".format(calefacciones[0].toString())
-            err = calefacciones[0].connect
+            sol = "{}".format(radiadores[0].toString())
+            err = radiadores[0].connect
             i = 1
-            while i < len(calefacciones) and connect == True:
-                sol = "{}:{}".format(sol, calefacciones[i].toString())
+            while i < len(radiadores) and connect == True:
+                sol = "{}:{}".format(sol, radiadores[i].toString())
                 print(sol)
-                connect = calefacciones[i].connect()
+                connect = radiadores[i].connect()
                 i = i + 1
             if connect:
                 sol = "+{}".format(sol)
@@ -78,83 +79,42 @@ while True:
         print("ha usado el comando NOW")
         if parametros == ['']:
             sol = ":".join([str(x.temperatura).replace('.', '')
-                           for x in calefacciones])
+                            for x in radiadores])
         elif len(parametros) > 1:
             sol = "-2"
         else:
             t = []
-            for calefaccion in calefacciones:
+            for radiador in radiadores:
                 for parametro in parametros:
-                    if(parametro == calefaccion.id):
+                    if parametro == radiador.id:
                         print(parametro)
-                        t.append(calefaccion.temperatura)
-
-            sol = ":".join([str(x).replace('.', '') for x in t])
+                        t.append(radiador.temperatura)
+            if(checkId(parametros[0],ids)):
+                sol = ":".join([str(x).replace('.', '') for x in t])
+            else:
+                sol="-14"
 
     if comando == "GET":
         print("ha usado el comando GET")
     if comando == "SET":
         print("ha usado el comando SET")
-        cpCalefacciones = calefacciones
+        cpRadiadores = radiadores
         if parametros == ['']:
             sol = "-3"
         elif len(parametros[0]) != 3:
             sol = "-4"
         elif len(parametros) == 1:
-            for calefaccion in calefacciones:
-                calefaccion.temperatura = parametros[0]
+            for radiador in radiadores:
+                radiador.temperatura = parametros[0]
         elif len(parametros) == 2:
-            for calefaccion in calefacciones:
-                if calefaccion.id == parametros[1]:
-                    calefaccion.temperatura = parametros[0]
+            for radiador in radiadores:
+                if radiador.id == parametros[1]:
+                    radiador.temperatura = parametros[0]
         elif len(parametros) > 2:
             sol = "-2"
         else:
-            calefacciones = cpCalefacciones
+            radiadores = cpRadiadores
             sol = "-16"
 
-    s.sendto(sol.encode(), dir_cli)
+    s.sendto(sol.encode('ascii'), dir_cli)
 s.close()
-
-
-def errorHandling():
-    if not command in commnads:
-        sol = "-1"
-
-    else:
-        if command == "SET":
-            if len(parametros) == 2:
-                if parametro[0] == "":
-                    sol = -3
-                else:
-                    if not len(parametros[0]) == 3 and not checkId(parametros[0]):
-                        sol = "-4"
-
-                    else:
-                        try:
-                            temperatura = int(parametros[1])
-                        except:
-                            sol = "-4"
-
-        if command == "GET":
-            if len(parametros) > 0:
-                if not checkId(parametros[0]):
-                    sol = "-4"
-
-        if command == "NAM":
-            if len(parametros):
-                sol = "-2"
-
-        if command == "OFF" or command == "ONN" or command == "NOW":
-            for parametro in parametros:
-                if not checkId(parametro):
-                    sol = "-4"
-                    break
-    return sol
-
-
-def checkId(id):
-    if id in ids:
-        return True
-    else:
-        return False
